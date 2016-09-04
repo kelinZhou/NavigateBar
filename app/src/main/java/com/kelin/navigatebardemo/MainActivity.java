@@ -43,11 +43,24 @@ public class MainActivity extends AppCompatActivity implements ButtonSelectedLis
         }
         if (nb_Bar != null) {
             nb_Bar.setTextColors(Color.BLUE, Color.RED);
+            //添加一个默认按钮
             nb_Bar.addButton(R.mipmap.bar_search_normal, R.mipmap.bar_search_selected, "搜索", "搜索");
+            //添加一个特殊按钮
             nb_Bar.addButton(R.mipmap.bar_home_normal, R.mipmap.bar_home_selected, true, "Home");
+            //添加一个默认按钮
             nb_Bar.addButton(R.mipmap.bar_shopping_normal, R.mipmap.bar_shopping_selected, "购物车", "购物车");
-            nb_Bar.setOnButtonSelectedListener(this);
+
+            nb_Bar.setOnButtonSelectedListener(new ButtonSelectedListener() {
+                @Override
+                public void onSelected(int position, boolean isSpecific, String tag, int buttonId) {
+                    if (BuildConfig.DEBUG) Log.d("MainActivity", "tag:" + tag + " | isSpecific:" + isSpecific + " | position:" + position + " | buttonId:" + buttonId);
+                    if (isSpecific) {
+                        Toast.makeText(getApplicationContext(), "这是一个特殊按钮", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
             nb_Bar.setViewPager(vp_Pager);
+            //默认加载第二页，参数中的1表示的是ViewPager的索引；
             nb_Bar.setNormalSelectedIndex(1);
         }
     }

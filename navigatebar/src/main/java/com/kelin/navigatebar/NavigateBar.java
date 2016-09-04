@@ -48,10 +48,6 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
      */
     private List<Button> mButtons = new ArrayList<>();
     /**
-     * 用来记录当前被选中的页面的索引；
-     */
-    private int mCurrentPosition;
-    /**
      * 上一次被选中的普通按钮；
      */
     private int mNormalButtonPosition;
@@ -281,6 +277,9 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
         }
     }
 
+    /**
+     * 当View和Window绑定时就会调用这个函数,也是在第一次onDraw前调用的；
+     */
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -293,6 +292,16 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
             }
         }
         changePager(btn == null ? mButtons.get(0) : btn);
+    }
+
+    /**
+     * 当我们销毁View的时候。我们写的这个View不再显示的时候被调用。
+     */
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        //将ViewPager的监听移除；
+        mViewPager.removeOnPageChangeListener(this);
     }
 
     /**
@@ -314,7 +323,6 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
             }
             mNormalButtonPosition = button.getIndex();
         }
-        mCurrentPosition = button.getIndex();
 
         TextView tv2 = button.getTitle();
         if (tv2 != null) {
