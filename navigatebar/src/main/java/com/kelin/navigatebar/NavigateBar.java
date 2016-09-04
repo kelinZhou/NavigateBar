@@ -60,6 +60,21 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
      */
     private ViewPager mViewPager;
 
+    /**
+     * 设置默认显示的页面；
+     * @param normalIndex 需要一个索引，如果您是使用该控件管理的ViewPager，
+     *                    那么这个索引就应该是ViewPager的索引，这表示你希望默认加载ViewPager的第几页。
+     *                    如果你使用该控件管理的是Fragment，那么这个索引就应该是你添加Fragment的顺序。
+     */
+    public void setNormalSelectedIndex(int normalIndex) {
+        mNormalSelectedButtonId = normalIndex;
+    }
+
+    /**
+     * 默认被选中的Button的ID；
+     */
+    private int mNormalSelectedButtonId;
+
 
     public NavigateBar(Context context) {
         this(context, null);
@@ -209,9 +224,10 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
         layout.setLayoutParams(params);
 
         //创建ImageView。
-        params = new LayoutParams(LayoutParams.WRAP_CONTENT, 0, 1);
+        params = new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1);
         ImageView imageView = new ImageView(getContext());
         imageView.setLayoutParams(params);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         //给ImageView设置图标
         StateListDrawable drawable = new StateListDrawable();
         Drawable normal = getResources().getDrawable(normalBitmap);
@@ -243,10 +259,40 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
         layout.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedButton(button);
+                if (button.getIndex() != mNormalButtonPosition || isSpecific) {
+                    changePager(button);
+                }
             }
         });
         return layout;
+    }
+
+    /**
+     * 改变当前的页面；
+     * @param button 需要一个{@link Button}对象；
+     */
+    private void changePager(Button button) {
+        selectedButton(button);
+        //切换ViewPager的页面
+        changeViewPage(button);
+        //监听回调
+        if (mListener != null) {
+            mListener.onSelected(button.getIndex(), button.isSpecific(), button.getTag(), button.getId());
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        //处理默认加载的页面这个页面是根据用户设置加载的，如果用户没有设置，默认加载第1页。
+        Button btn = null;
+        for (Button button : mButtons) {
+            if (button.getId() == mNormalSelectedButtonId) {
+                btn = button;
+                break;
+            }
+        }
+        changePager(btn == null ? mButtons.get(0) : btn);
     }
 
     /**
@@ -270,13 +316,6 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
         }
         mCurrentPosition = button.getIndex();
 
-        int id = button.getId();
-        //切换ViewPager的页面
-        changePage(button, id);
-        //监听回调
-        if (mListener != null) {
-            mListener.onSelected(button.getIndex(), button.isSpecific(), button.getTag(), id);
-        }
         TextView tv2 = button.getTitle();
         if (tv2 != null) {
             tv2.setTextColor(mSelectedColor);
@@ -287,10 +326,15 @@ public class NavigateBar extends LinearLayout implements ViewPager.OnPageChangeL
         }
     }
 
-    private void changePage(Button button, int id) {
+    /**
+     * 改变当前ViewPager的CurrentItem;
+     * @param button 需要一个{@link Button}对象；
+     */
+    private void changeViewPage(Button button) {
         if (mViewPager != null && !button.isSpecific()) {
             PagerAdapter adapter = mViewPager.getAdapter();
             if (adapter != null) {
+                int id = button.getId();
                 if (id < adapter.getCount()) {
                     mViewPager.setCurrentItem(id);
                 }

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kelin.adapter.BaseViewPagerAdapter;
 import com.kelin.listener.ButtonSelectedListener;
@@ -42,16 +43,20 @@ public class MainActivity extends AppCompatActivity implements ButtonSelectedLis
         }
         if (nb_Bar != null) {
             nb_Bar.setTextColors(Color.BLUE, Color.RED);
-            nb_Bar.addButton(R.mipmap.actionbar_unsend_icon, R.mipmap.biz_chat_comment_send, "发送", "发送");
-            nb_Bar.addButton(R.mipmap.actionbar_unsend_icon, R.mipmap.biz_chat_comment_send, true, "取消");
-            nb_Bar.addButton(R.mipmap.actionbar_unsend_icon, R.mipmap.biz_chat_comment_send, "中心", "中心");
+            nb_Bar.addButton(R.mipmap.bar_search_normal, R.mipmap.bar_search_selected, "搜索", "搜索");
+            nb_Bar.addButton(R.mipmap.bar_home_normal, R.mipmap.bar_home_selected, true, "Home");
+            nb_Bar.addButton(R.mipmap.bar_shopping_normal, R.mipmap.bar_shopping_selected, "购物车", "购物车");
             nb_Bar.setOnButtonSelectedListener(this);
             nb_Bar.setViewPager(vp_Pager);
+            nb_Bar.setNormalSelectedIndex(1);
         }
     }
 
     @Override
     public void onSelected(int position, boolean isSpecific, String tag, int buttonId) {
         if (BuildConfig.DEBUG) Log.d("MainActivity", "tag:" + tag + " | isSpecific:" + isSpecific + " | position:" + position + " | buttonId:" + buttonId);
+        if (isSpecific) {
+            Toast.makeText(this, "这是一个特殊按钮", Toast.LENGTH_SHORT).show();
+        }
     }
 }
