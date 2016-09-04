@@ -27,14 +27,14 @@
 ####1.给ViewPager设置适配器
 
 	vp_Pager.setAdapter(new BaseViewPagerAdapter<String>(strings) {
-                @Override
-                protected View onCreateView(ViewGroup container, int position, String s) {
-                    TextView view = new TextView(getApplicationContext());
-                    view.setText(s);
-                    view.setTextColor(Color.BLACK);
-                    return view;
-                }
-            });
+        @Override
+        protected View onCreateView(ViewGroup container, int position, String s) {
+            TextView view = new TextView(getApplicationContext());
+            view.setText(s);
+            view.setTextColor(Color.BLACK);
+            return view;
+        }
+    });
 
 ####2.设置ViewPager
 
